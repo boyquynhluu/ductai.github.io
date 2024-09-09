@@ -1,0 +1,19 @@
+<div th:fragment="search">
+	<div class="tooltip-container">
+		<div class="input-group rounded autocomplete">
+			<div class="tooltip-trigger" data-tooltip="This is a tooltip!" id="data-tooltip"></div>
+			<input type="text" name="search" id="search"
+				class="form-control rounded"
+				placeholder="Nhập Tên, SDT hoặc Email..." aria-label="Search"
+				aria-describedby="search-addon" />
+			<span class="input-group-text border-0" id="search-addon">
+				<i class="fas fa-search" id="btn-search"></i>
+			</span>
+		</div>
+		<div id="suggestions" class="suggestions"></div>
+		<div>
+			<span id="input-check"
+				style="color: red; font-style: italic; font-size: 15px; float: left; margin: 0 1em;"></span>
+		</div>
+	</div>
+</div>

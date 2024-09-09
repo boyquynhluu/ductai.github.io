@@ -1,0 +1,44 @@
+.tooltip-container {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip-trigger {
+	cursor: pointer;
+	position: relative;
+}
+
+.tooltip-trigger::after {
+	content: attr(data-tooltip);
+	position: absolute;
+	background: #333;
+	color: #fff;
+	padding: 5px;
+	border-radius: 4px;
+	white-space: nowrap;
+	display: none; /* Initially hidden */
+	z-index: 1000;
+	bottom: 125%; /* Position above the element */
+	left: 50%;
+	transform: translateX(-50%);
+	opacity: 0; /* Transparent by default */
+	transition: opacity 0.3s; /* Smooth fade-in effect */
+}
+
+.tooltip-trigger:hover::after {
+	display: block; /* Show tooltip on hover */
+	opacity: 1; /* Fully opaque */
+}
+
+.tooltip-text {
+	background: #333;
+	color: #fff;
+	padding: 5px;
+	border-radius: 4px;
+	white-space: nowrap;
+	display: none; /* Initially hidden */
+	z-index: 1000;
+	position: absolute;
+	opacity: 0; /* Transparent by default */
+	transition: opacity 0.3s; /* Smooth fade-in effect */
+}

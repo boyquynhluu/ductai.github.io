@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>Sinh Viên</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous" />
+<script
+	src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<link th:href="@{/styles/index.css}" rel="stylesheet" />
+<link th:href="@{/styles/autocomplete.css}" rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<link rel="icon" type="image/x-icon" href="/images/webimage.ico">
+</head>
+<body>
+
+	<!-- Modal Create Mail -->
+	<div th:replace="fragments/mail-modal-fragment.html :: mail-fragment"></div>
+
+	<div class="header-content">
+		<div>
+			<i class="fas fa-university icon-30px"></i> <span
+				style="font-size: 25px; line-height: 50px;">QUẢN LÝ SINH VIÊN</span>
+		</div>
+		<div class="logout">
+			<i class="fas fa-power-off"></i> <span>LOGOUT</span>
+		</div>
+	</div>
+	<div class="body-content">
+		<div th:replace="fragments/body-fragment.html :: body-left"></div>
+		<div class="content-right">
+			<!-- Search -->
+			<div th:replace="fragments/search-fragment.html :: search"></div>
+			<!-- Search -->
+
+			<!-- Event -->
+			<div class="btn-event">
+				<button type="button" id="export-excel" class="btn btn-primary">Excel</button>
+				<button type="button" id="export-pdf" class="btn btn-info">PDF</button>
+				<button type="button" id="export-pdf"
+					class="btn btn-info openStandings">Tạo Mail</button>
+				<button type="button" id="checked-all" class="btn btn-primary"
+					style="width: 8em;">Chọn Tất Cả</button>
+				<button type="button" onclick="unCheckedCheckbox()" id="un-checked"
+					class="btn btn-primary">Bỏ Chọn</button>
+			</div>
+			<!-- Event -->
+			<table class="table table-bordered">
+				<thead id="sinhvien-list-header" class="thead-light"
+					style="background-color: #ccf2ff"></thead>
+				<div id="empty-data" style="color: Red; font-size: 20px;"></div>
+				<tbody id="sinhvien-list-body"></tbody>
+			</table>
+		</div>
+		<!-- paging -->
+		<div id="pagination"></div>
+	</div>
+
+	<!-- Footer -->
+	<div th:replace="fragments/footer-fragment.html :: footer"></div>
+	<!-- Footer -->
+
+	<p id="response"></p>
+
+
+	<script type="text/javascript" th:src="@{/js/sinhvien.js}"></script>
+	<script type="text/javascript" th:src="@{/js/modal.js}"></script>
+</body>
+</html>

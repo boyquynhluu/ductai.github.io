@@ -1,0 +1,30 @@
+<div id="myModalPositions" class="modal fade"
+	th:fragment="mail-fragment">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Tạo Mail</h4>
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">x</button>
+			</div>
+			<div class="modal-body">
+				<div class="container mt-3">
+					<form>
+						<label style="float: left;">Subject Mail:</label>
+						<input type="text" name="subject" id="subject" class="form-control" placeholder="Nhập subject mail" />
+
+						<label style="float: left;">Body Mail:</label>
+						<textarea name="msgBody" id="msgBody" class="form-control mt-3" placeholder="Nhập body mail"></textarea>
+
+						<label style="float: left;">Attachment:</label>
+						<input type="file" name="attachment" id="attachment" class="form-control mt-3" />
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="send-mail" data-dismiss="modal">Gửi Mail</button>
+				<button type="button" class="btn btn-default close" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
