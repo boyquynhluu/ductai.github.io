@@ -9,7 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -38,25 +40,38 @@ import jakarta.transaction.SystemException;
 @RequestMapping(value = "/api/")
 public class SinhVienRestController {
 
-    @Autowired
     private SinhVienService service;
+
+    public SinhVienRestController(SinhVienService service) {
+        this.service = service;
+    }
 
     @Autowired
     private ModelMapper mapper;
 
     @GetMapping(value = "sinhviens", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SinhVienResource> getAllSinhVien() throws Exception {
+    /* @PreAuthorize("hasAuthority('ROLE_ADMIN')") */
+    public Map<String, Object> getAllSinhVien() throws Exception {
         List<SinhVienResource> resources = new ArrayList<>();
+        Map<String, Object> sinhviens = new HashedMap<>();
 
         List<SinhVienModel> models = service.getSinhViens();
         // Set data Models to Resources
         if (!CollectionUtils.isEmpty(models)) {
             Type listType = new TypeToken<List<SinhVienResource>>() {
             }.getType();
-
             resources = mapper.map(models, listType);
         }
-        return resources;
+        sinhviens.put("data", resources);
+        sinhviens.put("total", resources.size());
+        return sinhviens;
+    }
+
+    @PostMapping(value = "sinhviens", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createSinhVien(@RequestBody SinhVienResource sinhvien) throws Exception {
+        SinhVienModel model = mapper.map(sinhvien, SinhVienModel.class);
+        service.createSinhVien(model);
+        return (ResponseEntity<?>) ResponseEntity.ok();
     }
 
     @PostMapping("sinhviens/export/excel")

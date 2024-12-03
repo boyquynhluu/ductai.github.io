@@ -11,4 +11,6 @@ public interface SinhVienService {
     public List<SinhVienModel> getSinhVienByIds(String[] ids) throws Exception;
 
     public List<SinhVienModel> searchSinhVien(String input) throws Exception;
+    
+    public void createSinhVien(SinhVienModel model) throws Exception;
 }

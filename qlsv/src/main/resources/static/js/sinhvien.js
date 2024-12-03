@@ -1,20 +1,37 @@
 const autocompleteList = [];
-
 //Init load data screen
 document.addEventListener("DOMContentLoaded", function() {
+	// Get token login success
+	var token = localStorage.getItem('jwtToken');
+
+	if (!token) {
+		console.error('No JWT token found');
+		window.location.href = "http://localhost:8080/login";
+	}
+
 	// Function to fetch and render data
 	const fetchData = async () => {
 		try {
-			const response = await fetch('/api/sinhviens');
-			if (!response.ok) throw new Error('Network response was not ok');
-			const data = await response.json();
-			setDataAutoSearchBox(data);
-			renderTable(data);
+			const response = await fetch('/api/sinhviens', {
+				method: 'GET',
+				headers: {
+					'Authorization': 'Bearer ' + token,
+					'Content-Type': 'application/json'
+				}
+			});
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			const res = await response.json();
+			setDataAutoSearchBox(res.data);
+			renderTable(res.data);
 		} catch (error) {
 			console.error('Error fetching data:', error);
 		}
 	};
+
 	fetchData();
+
 	//Autocomplete
 	autocompleteSearchBox(autocompleteList);
 });
@@ -71,6 +88,7 @@ const renderTable = (data) => {
 };
 
 $(document).ready(function() {
+
 	// Call API export Excel
 	$('#export-excel').click(function(e) {
 		e.preventDefault();
@@ -141,6 +159,10 @@ $(document).ready(function() {
 				$('#response').text('Error: ' + error);
 			}
 		});
+	});
+
+	$('#cursor-pointer').click(function() {
+		location.reload();
 	});
 });
 

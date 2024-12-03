@@ -8,6 +8,7 @@ public class Constants {
     public static final String BLANK = "";
 
     public static final String DD_MM_YYYY = "dd-MM-yyyy";
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd_HH:mm:ss";
     public static final String YYYYMMDD_HHMMSS = "yyyyMMdd_HHmmss";
     public static final String YYYYMMDD = "yyyyMMdd";

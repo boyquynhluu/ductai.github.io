@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qlsv.entities.SinhVien;
 import com.qlsv.model.SinhVienModel;
+import com.qlsv.repositories.SinhVienRepository;
 import com.qlsv.service.SinhVienService;
 import com.qlsv.utils.ConvertUtils;
 import com.qlsv.utils.DBUtils;
@@ -27,6 +30,9 @@ public class SinhVienServiceImpl implements SinhVienService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private SinhVienRepository repo;
+
     private static final StringBuilder SQL_GET_ALL_SINH_VIEN = new StringBuilder()
             .append("SELECT")
             .append("   sv.ma_sinh_vien,")
@@ -39,7 +45,7 @@ public class SinhVienServiceImpl implements SinhVienService {
             .append("   sv.dia_chi,")
             .append("   sv.trang_thai")
             .append(" FROM")
-            .append("   Sinh_Vien sv")
+            .append("   sinh_vien sv")
             .append(" ORDER BY")
             .append("   sv.ten_sinh_vien");
 
@@ -76,34 +82,36 @@ public class SinhVienServiceImpl implements SinhVienService {
     @Override
     public List<SinhVienModel> searchSinhVien(String input) throws Exception {
         List<SinhVienModel> models = new ArrayList<>();
-         StringBuilder sql = new StringBuilder()
-                .append("SELECT")
-                .append("   sv.ma_sinh_vien,")
-                .append("   sv.ten_sinh_vien,")
-                .append("   sv.tuoi,")
-                .append("   sv.phone,")
-                .append("   sv.email,")
-                .append("   sv.ngay_sinh,")
-                .append("   sv.gioi_tinh,")
-                .append("   sv.dia_chi,")
-                .append("   sv.trang_thai")
-                .append(" FROM")
-                .append("   Sinh_Vien sv")
-                .append("   WHERE")
-                .append("   sv.ten_sinh_vien LIKE  '"+'%'+""+input+""+'%'+"' ")
-                .append(" OR")
-                .append("   sv.email LIKE  '"+'%'+""+input+""+'%'+"' ")
-                .append(" OR")
-                .append("   sv.phone LIKE  '"+'%'+""+input+""+'%'+"' ")
-                .append(" ORDER BY")
+        StringBuilder sql = new StringBuilder().append("SELECT").append("   sv.ma_sinh_vien,")
+                .append("   sv.ten_sinh_vien,").append("   sv.tuoi,").append("   sv.phone,").append("   sv.email,")
+                .append("   sv.ngay_sinh,").append("   sv.gioi_tinh,").append("   sv.dia_chi,")
+                .append("   sv.trang_thai").append(" FROM").append("   Sinh_Vien sv").append("   WHERE")
+                .append("   sv.ten_sinh_vien LIKE  '" + '%' + "" + input + "" + '%' + "' ").append(" OR")
+                .append("   sv.email LIKE  '" + '%' + "" + input + "" + '%' + "' ").append(" OR")
+                .append("   sv.phone LIKE  '" + '%' + "" + input + "" + '%' + "' ").append(" ORDER BY")
                 .append("   sv.ten_sinh_vien");
-        
-         List<Object[]> sinhviens = entityManager.createNativeQuery(sql.toString()).getResultList();
-         for (Object[] obj : sinhviens) {
-             models.add(this.setData(obj));
-         }
-         return CollectionUtils.isEmpty(models) ? Collections.emptyList() : models;
-     }
+
+        List<Object[]> sinhviens = entityManager.createNativeQuery(sql.toString()).getResultList();
+        for (Object[] obj : sinhviens) {
+            models.add(this.setData(obj));
+        }
+        return CollectionUtils.isEmpty(models) ? Collections.emptyList() : models;
+    }
+
+    @Override
+    public void createSinhVien(SinhVienModel model) throws Exception {
+        SinhVien sv = new SinhVien();
+        sv.setTenSinhVien(model.getTenSinhVien());
+        sv.setTuoi(model.getTuoi());
+        sv.setPhone(model.getPhone());
+        sv.setEmail(model.getEmail());
+        sv.setDate(ConvertUtils.convertStringToDate(model.getNgaySinh()));
+        sv.setGioiTinh(ConvertUtils.convertStringToBoolean(model.getGioiTinh()));
+        sv.setDiaChi(model.getDiaChi());
+        sv.setTrangThai(model.getTrangThai());
+
+        repo.save(sv);
+    }
 
     /**
      * Set data from entity to model
@@ -135,20 +143,10 @@ public class SinhVienServiceImpl implements SinhVienService {
      */
     private String createSQLGetSinhVienByIds(String[] ids) {
         // Create sql get sinh vien by id
-        StringBuilder sqlGetSinhVienByIds = new StringBuilder()
-                .append("SELECT")
-                .append("   sv.ma_sinh_vien,")
-                .append("   sv.ten_sinh_vien,")
-                .append("   sv.tuoi,")
-                .append("   sv.phone,")
-                .append("   sv.email,")
-                .append("   sv.ngay_sinh,")
-                .append("   sv.gioi_tinh,")
-                .append("   sv.dia_chi,")
-                .append("   sv.trang_thai")
-                .append(" FROM")
-                .append("   Sinh_Vien sv")
-                .append(" WHERE");
+        StringBuilder sqlGetSinhVienByIds = new StringBuilder().append("SELECT").append("   sv.ma_sinh_vien,")
+                .append("   sv.ten_sinh_vien,").append("   sv.tuoi,").append("   sv.phone,").append("   sv.email,")
+                .append("   sv.ngay_sinh,").append("   sv.gioi_tinh,").append("   sv.dia_chi,")
+                .append("   sv.trang_thai").append(" FROM").append("   Sinh_Vien sv").append(" WHERE");
 
         String sqlWhere = "";
         if (ids.length > 1) {
@@ -167,4 +165,5 @@ public class SinhVienServiceImpl implements SinhVienService {
 
         return sqlGetSinhVienByIds.toString();
     }
+
 }

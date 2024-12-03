@@ -101,3 +101,7 @@ html, body {
 	width: 7em;
 	margin: 0 1em 1em 0;
 }
+
+.cursor-pointer:hover {
+	cursor: pointer;
+}
