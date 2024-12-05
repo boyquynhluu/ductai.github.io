@@ -26,15 +26,17 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
+    @Column(nullable = false, name = "name")
     private String name;
-    @Column(nullable = false, unique = true)
-
+    
+    @Column(nullable = false, name = "username")
     private String username;
-    @Column(nullable = false, unique = true)
+    
+    @Column(nullable = false, name = "email")
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "password")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

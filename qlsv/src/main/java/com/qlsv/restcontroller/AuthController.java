@@ -10,13 +10,13 @@ import com.qlsv.service.AuthService;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/auth/")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private AuthService authService;
 
     // Build Login REST API
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<JWTAuthResponse> authenticate(@RequestBody LoginModel loginDto) {
         String token = authService.login(loginDto);
 

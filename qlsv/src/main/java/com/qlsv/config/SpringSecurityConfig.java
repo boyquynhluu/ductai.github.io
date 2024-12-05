@@ -3,6 +3,7 @@ package com.qlsv.config;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,10 +14,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -27,20 +30,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 public class SpringSecurityConfig {
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("**")
-                        .allowedOrigins("http://localhost:8080")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("*")
-                        .allowCredentials(false)
-                        .maxAge(3600);
-            }
-        };
-    }
+    // jwtTokenProvider, userDetailsService
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    /*
+     * @Bean public WebMvcConfigurer corsConfigurer() { return new
+     * WebMvcConfigurer() {
+     * 
+     * @Override public void addCorsMappings(CorsRegistry registry) {
+     * registry.addMapping("**") .allowedOrigins("http://localhost:8080")
+     * .allowedMethods("GET", "POST", "PUT", "DELETE") .allowedHeaders("*")
+     * .allowCredentials(false) .maxAge(3600); } }; }
+     */
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -49,6 +54,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http.cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
@@ -57,17 +63,15 @@ public class SpringSecurityConfig {
             return config;
         }));
 
-        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorize -> {
-            authorize.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                    .requestMatchers("/**").permitAll()
-                    .requestMatchers("/api/").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/sinhviens").permitAll()
-                    .requestMatchers("/resources/**",
-                            "/static/**", "/css/**", "/styles/**", "/js/**", "/img/**", "/icon/**", "/images/**")
-                    .permitAll().anyRequest().authenticated();
-        }).exceptionHandling().authenticationEntryPoint(new Http403ForbiddenEntryPoint()); // Ensure there's an entry
-                                                                                           // point
+        http.csrf().disable();
+
+        http.authorizeHttpRequests(authorize -> {
+            authorize.requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/resources/**", "/static/**", "/css/**", "/styles/**", "/js/**", "/img/**","/icon/**", "/images/**").permitAll()
+                    .requestMatchers("/api/sinhviens").hasAuthority("ROLE_ADMIN").anyRequest().authenticated()
+                    .and()
+                    .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        }).exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint());
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.sessionManagement().sessionFixation().newSession();
@@ -77,5 +81,10 @@ public class SpringSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService);
     }
 }
