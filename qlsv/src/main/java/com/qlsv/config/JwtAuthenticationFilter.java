@@ -1,11 +1,8 @@
 package com.qlsv.config;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,38 +35,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // get JWT token from http request
         String token = getTokenFromRequest(request);
+        String username = null;
 
         // validate token
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
 
-            // get username from token
-            String username = jwtTokenProvider.getUsername(token);
+            try {
+                // get username from token
+                username = jwtTokenProvider.getUsername(token);
 
-            // load the user associated with token
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            
-         // Lấy quyền của người dùng (chắc chắn có ROLE_ADMIN nếu là admin)
-            //List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
-            
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
+                // load the user associated with token
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
 
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            } catch (ExpiredJwtException e) {
+                //Todo
+            }
         }
-
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Get token by request header
+     * 
+     * @param request
+     * @return
+     */
     private String getTokenFromRequest(HttpServletRequest request) {
-
         String bearerToken = request.getHeader("Authorization");
-
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7, bearerToken.length());
         }
-
         return null;
     }
 }

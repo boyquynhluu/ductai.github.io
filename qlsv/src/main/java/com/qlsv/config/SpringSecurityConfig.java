@@ -6,21 +6,17 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -37,15 +33,20 @@ public class SpringSecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    /*
-     * @Bean public WebMvcConfigurer corsConfigurer() { return new
-     * WebMvcConfigurer() {
-     * 
-     * @Override public void addCorsMappings(CorsRegistry registry) {
-     * registry.addMapping("**") .allowedOrigins("http://localhost:8080")
-     * .allowedMethods("GET", "POST", "PUT", "DELETE") .allowedHeaders("*")
-     * .allowCredentials(false) .maxAge(3600); } }; }
-     */
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("**")
+                        .allowedOrigins("http://localhost:8080")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedHeaders("*")
+                        .allowCredentials(false)
+                        .maxAge(3600);
+            }
+        };
+    }
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -67,6 +68,7 @@ public class SpringSecurityConfig {
 
         http.authorizeHttpRequests(authorize -> {
             authorize.requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/sinhviens", "/login").permitAll()
                     .requestMatchers("/resources/**", "/static/**", "/css/**", "/styles/**", "/js/**", "/img/**","/icon/**", "/images/**").permitAll()
                     .requestMatchers("/api/sinhviens").hasAuthority("ROLE_ADMIN").anyRequest().authenticated()
                     .and()

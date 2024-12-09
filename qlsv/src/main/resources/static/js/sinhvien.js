@@ -19,9 +19,33 @@ document.addEventListener("DOMContentLoaded", function() {
 					'Content-Type': 'application/json'
 				}
 			});
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
+			// If token is exper
+			if (response.status === 401) {
+				// Token hết hạn, gửi lại refresh token
+				const refreshToken = localStorage.getItem("jwtToken");
+
+				// Gọi API refresh token
+				return fetch('/api/auth/refresh-token', {
+					method: 'POST',
+					headers: {
+						'Authorization': `Bearer ${refreshToken}`
+					}
+				})
+					.then(res => res.json())
+					.then(data => {
+						if (data.accessToken) {
+							// Lưu lại Access Token mới
+							localStorage.setItem("jwtToken", data.accessToken);
+							// Gửi lại request ban đầu với Access Token mới
+							options.headers['Authorization'] = `Bearer ${data.accessToken}`;
+							return fetchData(url, options); // Gửi lại yêu cầu với token mới
+						} else {
+							// Nếu không thể lấy lại access token, logout
+							window.location.href = "/login";
+						}
+					});
 			}
+			
 			const res = await response.json();
 			setDataAutoSearchBox(res.data);
 			renderTable(res.data);

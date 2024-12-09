@@ -12,6 +12,7 @@ $(document).ready(function() {
 			}),
 			success: function(response) {
 				localStorage.setItem("jwtToken", response.accessToken);
+				window.location.href = "http://localhost:8080/sinhviens";
 				console.log("localStorage", response.accessToken);
 			},
 			error: function(error) {
