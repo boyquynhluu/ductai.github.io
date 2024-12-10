@@ -69,6 +69,7 @@ public class SpringSecurityConfig {
         http.authorizeHttpRequests(authorize -> {
             authorize.requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/sinhviens", "/login").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-config/**").permitAll()
                     .requestMatchers("/resources/**", "/static/**", "/css/**", "/styles/**", "/js/**", "/img/**","/icon/**", "/images/**").permitAll()
                     .requestMatchers("/api/sinhviens").hasAuthority("ROLE_ADMIN").anyRequest().authenticated()
                     .and()

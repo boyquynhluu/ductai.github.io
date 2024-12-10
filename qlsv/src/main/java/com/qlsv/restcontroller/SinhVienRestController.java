@@ -34,6 +34,8 @@ import com.qlsv.service.SinhVienService;
 import com.qlsv.utils.ExcelExport;
 import com.qlsv.utils.PdfExporter;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.SystemException;
 
 @RestController
@@ -50,7 +52,10 @@ public class SinhVienRestController {
     private ModelMapper mapper;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Operation(
+            summary = "Example GET request",
+            security = @SecurityRequirement(name = "Authorization")
+        )
     public Map<String, Object> getAllSinhVien() throws Exception {
         List<SinhVienResource> resources = new ArrayList<>();
         Map<String, Object> sinhviens = new HashedMap<>();
