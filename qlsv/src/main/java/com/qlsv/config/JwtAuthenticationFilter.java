@@ -33,6 +33,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/api/auth/") || uri.equals("/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // get JWT token from http request
         String token = getTokenFromRequest(request);
         String username = null;
