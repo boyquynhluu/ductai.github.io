@@ -1,0 +1,56 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/qlsv?useSSL=false
+    username: root
+    password: root
+
+  #Setting Send Mail by Gmail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: vanductai.dhv@gmail.com
+    password: jtii hajw fwan ktda
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  h2:
+    console:
+      enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+app:
+  jwt:
+    secret: daf66e01593f61a15b857cf433aae03a005812b31234e149036bcc8dee755dbb
+    expiration-milliseconds: 604800000
+
+open:
+  api:
+    title: Quan Ly Sinh Vien
+    version: v1.0.0
+    description: Create By TaiVD
+    serverUrl: http://localhost:8080/
+    serverName: Server Test API
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

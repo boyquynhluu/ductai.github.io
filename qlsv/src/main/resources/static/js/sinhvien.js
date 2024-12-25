@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
 						}
 					});
 			}
-			
+
 			const res = await response.json();
 			setDataAutoSearchBox(res.data);
 			renderTable(res.data);
@@ -115,11 +115,16 @@ $(document).ready(function() {
 
 	// Call API export Excel
 	$('#export-excel').click(function(e) {
+		// Get token login success
+		var accessToken = localStorage.getItem('jwtToken');
 		e.preventDefault();
 		const values = getSelectedCheckbox();
 		$.ajax({
 			url: '/api/sinhviens/export/excel',
 			type: 'POST',
+			headers: {
+				'Authorization': `Bearer ${accessToken}`
+			},
 			contentType: 'application/json',
 			data: JSON.stringify(values),
 			success: function(response) {
@@ -134,11 +139,16 @@ $(document).ready(function() {
 
 	// Call API export PDF
 	$('#export-pdf').click(function(e) {
+		// Get token login success
+		var accessToken = localStorage.getItem('jwtToken');
 		e.preventDefault();
 		const values = getSelectedCheckbox();
 		$.ajax({
 			url: '/api/sinhviens/export/pdf',
 			type: 'POST',
+			headers: {
+				'Authorization': `Bearer ${accessToken}`
+			},
 			contentType: 'application/json',
 			data: JSON.stringify(values),
 			success: function(response) {

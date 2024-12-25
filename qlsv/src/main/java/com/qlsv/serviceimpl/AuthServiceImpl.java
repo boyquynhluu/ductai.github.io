@@ -12,21 +12,16 @@ import com.qlsv.model.LoginModel;
 import com.qlsv.repositories.UserRepository;
 import com.qlsv.service.AuthService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private AuthenticationManager authenticationManager;
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private JwtTokenProvider jwtTokenProvider;
-
-    public AuthServiceImpl(JwtTokenProvider jwtTokenProvider, UserRepository userRepository,
-            PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public String login(LoginModel loginDto) {
@@ -36,8 +31,6 @@ public class AuthServiceImpl implements AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtTokenProvider.generateToken(authentication);
-
-        return token;
+        return jwtTokenProvider.generateToken(authentication);
     }
 }

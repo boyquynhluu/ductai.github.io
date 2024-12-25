@@ -3,7 +3,6 @@ package com.qlsv.config;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,17 +20,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+@RequiredArgsConstructor
 public class SpringSecurityConfig {
 
-    // jwtTokenProvider, userDetailsService
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -68,10 +66,13 @@ public class SpringSecurityConfig {
 
         http.authorizeHttpRequests(authorize -> {
             authorize.requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/sinhviens", "/login").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-config/**").permitAll()
                     .requestMatchers("/resources/**", "/static/**", "/css/**", "/styles/**", "/js/**", "/img/**","/icon/**", "/images/**").permitAll()
-                    .requestMatchers("/api/sinhviens").hasAuthority("ROLE_ADMIN").anyRequest().authenticated()
+                    .requestMatchers("/api/sinhviens", "/api/sendMail").hasAuthority("ROLE_ADMIN")
+                    .anyRequest()
+                    .authenticated()
                     .and()
                     .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }).exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint());

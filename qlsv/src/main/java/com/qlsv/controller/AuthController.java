@@ -1,5 +1,6 @@
-package com.qlsv.restcontroller;
+package com.qlsv.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,17 +11,18 @@ import com.qlsv.model.JWTAuthResponse;
 import com.qlsv.model.LoginModel;
 import com.qlsv.service.AuthService;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private AuthService authService;
+    private final AuthService authService;
 
     // Build Login REST API
-    @PostMapping("/login")
+    @PostMapping(value="/login", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<JWTAuthResponse> authenticate(@RequestBody LoginModel loginDto) {
         String token = authService.login(loginDto);
 

@@ -10,14 +10,19 @@ $(document).ready(function() {
 	});
 
 	$('#send-mail').click(function(e) {
+		// Get token login success
+		var accessToken = localStorage.getItem('jwtToken');
 		e.preventDefault();
 		let formData = getDataSendMail();
 		if (formData === null) {
 			return; // Exit if validation failed
 		}
 		$.ajax({
-			url: '/api/sendMailWithAttachment',
+			url: '/api/sendMail/sendMailWithAttachment',
 			type: 'POST',
+			headers: {
+				'Authorization': `Bearer ${accessToken}`
+			},
 			processData: false, // Important for FormData
 			contentType: false, // Important for FormData
 			data: formData,

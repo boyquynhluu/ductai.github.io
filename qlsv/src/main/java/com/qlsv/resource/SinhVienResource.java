@@ -1,13 +1,18 @@
 package com.qlsv.resource;
 
-import lombok.Data;
+import com.qlsv.exceptionhandler.ValidEmail;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class SinhVienResource {
     private int maSV;
     private String tenSinhVien;
     private int tuoi;
     private String phone;
+    @ValidEmail
     private String email;
     private String ngaySinh;
     private String gioiTinh;

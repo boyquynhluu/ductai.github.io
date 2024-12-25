@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -33,20 +32,16 @@ import com.qlsv.utils.ConvertUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.ServletContext;
-import jakarta.transaction.SystemException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j(topic = "Email-Service")
+@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    ServletContext context;
-
-    @Autowired
-    private SinhVienRepository repo;
-
-    @Autowired
-    private JavaMailSender javaMailSender;
+    private final SinhVienRepository repo;
+    private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
     private String sender;
@@ -59,10 +54,9 @@ public class EmailServiceImpl implements EmailService {
      * @throws Exception
      */
     @Override
-    public String sendSimpleMail(EmailDetails details) throws Exception {
+    public String sendSimpleMail(EmailDetails details) {
         // Try block to check for exceptions
         try {
-
             // Creating a simple mail message
             MimeMessage mailMessage = javaMailSender.createMimeMessage();
 
@@ -78,10 +72,10 @@ public class EmailServiceImpl implements EmailService {
 
             // Sending the mail
             javaMailSender.send(mailMessage);
-            return "Mail Sent Successfully...";
+            return "Mail Send Successfully...";
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new SystemException("Error while Sending Mail");
+            log.error("Send mail has error: {}", e);
+            return "Error Send Mail...";
         }
     }
 
@@ -90,10 +84,11 @@ public class EmailServiceImpl implements EmailService {
      * 
      * @param details
      * @return String
+     * @throws IOException 
      * @throws Exception
      */
     @Override
-    public String sendMailWithAttachment(EmailDetails details) throws Exception {
+    public String sendMailWithAttachment(EmailDetails details) {
         // Creating a mime message
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
@@ -144,13 +139,17 @@ public class EmailServiceImpl implements EmailService {
                     FileSystemResource file = new FileSystemResource(filePath);
                     mimeMessageHelper.addAttachment(file.getFilename(), file);
                 }
+                log.info("Send Mail...");
                 // Sending the mail
                 javaMailSender.send(mimeMessage);
             }
             return "Mail sent Successfully";
         } catch (MessagingException e) {
-            e.printStackTrace();
-            throw new SystemException("Error while sending mail!!!");
+            log.error("Send mail has error: {}", e);
+            return "Error Send Mail...";
+        } catch (IOException e) {
+            log.error("Do not get template send mail...");
+            return "Error Send Mail...";
         }
     }
 
@@ -161,7 +160,7 @@ public class EmailServiceImpl implements EmailService {
      * @return filePath File
      * @throws Exception
      */
-    private File exportFile(MultipartFile fileInput) throws Exception {
+    private File exportFile(MultipartFile fileInput) {
         File folderPath = null;
         File filePath = null;
         try {
@@ -189,15 +188,12 @@ public class EmailServiceImpl implements EmailService {
             try (OutputStream outStream = new FileOutputStream(filePath)) {
                 outStream.write(buffer);
             } catch (IOException e) {
-                e.printStackTrace();
-                throw new IOException("Has error when write file");
+                log.error("Write file error: {}", e);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOException("Has error when create file");
+            log.error("File attachment has error: {}", e);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new SystemException("Has error when create file");
+            log.error("File attachment has error: {}", e);
         }
         return filePath;
     }

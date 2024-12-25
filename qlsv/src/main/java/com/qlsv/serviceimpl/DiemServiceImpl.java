@@ -15,9 +15,11 @@ import com.qlsv.utils.ConvertUtils;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
+@Slf4j(topic = "Diem Service")
 public class DiemServiceImpl implements DiemService {
 
     @PersistenceContext
@@ -53,14 +55,17 @@ public class DiemServiceImpl implements DiemService {
     @SuppressWarnings("unchecked")
     @Override
     public List<DiemModel> getAllSinhVien() throws Exception {
-        List<DiemModel> models = new ArrayList<DiemModel>();
-
-        List<Object[]> entities = entityManager.createNativeQuery(GET_ALL_SINH_VIEN.toString()).getResultList();
-
-        for (Object[] object : entities) {
-            models.add(this.setData(object));
+        log.info("Get All Sinh Vien");
+        List<DiemModel> models = new ArrayList<>();
+        try {
+            List<Object[]> entities = entityManager.createNativeQuery(GET_ALL_SINH_VIEN.toString()).getResultList();
+            for (Object[] object : entities) {
+                models.add(this.setData(object));
+            }
+        } catch (Exception e) {
+            log.error("Get Diem Error: {}", e);
+            return Collections.emptyList();
         }
-
         return CollectionUtils.isEmpty(models) ? Collections.emptyList() : models;
     }
 

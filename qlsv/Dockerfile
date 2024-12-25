@@ -1,12 +1,9 @@
-# Sử dụng image Java 11 chính thức từ Docker Hub
-#FROM openjdk:11-jdk-slim
-FROM openjdk:17-jdk-slim
+FROM openjdk:17
 
-# Thiết lập thư mục làm việc trong container
-WORKDIR /app
+ARG JAR_FILE=target/*.jar
 
-# Copy file JAR vào thư mục làm việc trong container
-COPY target/qlsv-0.0.1-SNAPSHOT.jar /app/qlsv-0.0.1-SNAPSHOT.jar
+COPY ${JAR_FILE} backend-qlsv.jar
 
-# Chạy ứng dụng Spring Boot
-ENTRYPOINT ["java", "-jar", "/app/qlsv-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "backend-qlsv.jar"]
+
+EXPOSE 8080

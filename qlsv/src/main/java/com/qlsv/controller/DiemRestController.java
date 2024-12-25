@@ -1,4 +1,4 @@
-package com.qlsv.restcontroller;
+package com.qlsv.controller;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +16,15 @@ import com.qlsv.model.DiemModel;
 import com.qlsv.resource.DiemResource;
 import com.qlsv.service.DiemService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/")
 public class DiemRestController {
 
-    @Autowired
-    private DiemService service;
-
-    @Autowired
-    private ModelMapper mapper;
+    private final DiemService service;
+    private final ModelMapper mapper;
 
     @GetMapping(value = "diems", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DiemResource> getAllSinhVien() throws Exception {

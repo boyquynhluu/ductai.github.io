@@ -3,17 +3,16 @@ package com.qlsv.utils;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Objects;
 
-import org.springframework.format.datetime.DateFormatter;
-
 import com.qlsv.constants.Constants;
 
 import jakarta.transaction.SystemException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j(topic = "Convert Utils")
 public class ConvertUtils {
 
     /**
@@ -47,8 +46,7 @@ public class ConvertUtils {
             DateFormat dateFormat = new SimpleDateFormat(Constants.DD_MM_YYYY);
             dateStr = dateFormat.format(date);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new SystemException("Format Date To String Has Error!");
+            log.error("Format Date To String Has Error: {}", e );
         }
         return dateStr;
     }

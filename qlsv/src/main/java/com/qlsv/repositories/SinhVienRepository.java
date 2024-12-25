@@ -8,4 +8,6 @@ import com.qlsv.entities.SinhVien;
 @Repository
 public interface SinhVienRepository extends JpaRepository<SinhVien, Integer> {
 
+    SinhVien getById(int id);
+
 }

@@ -6,11 +6,11 @@ import com.qlsv.model.SinhVienModel;
 
 public interface SinhVienService {
 
-    public List<SinhVienModel> getSinhViens() throws Exception;
+    public List<SinhVienModel> getSinhViens();
 
-    public List<SinhVienModel> getSinhVienByIds(String[] ids) throws Exception;
+    public List<SinhVienModel> getSinhVienByIds(String[] ids);
 
-    public List<SinhVienModel> searchSinhVien(String input) throws Exception;
+    public List<SinhVienModel> searchSinhVien(String input);
     
-    public void createSinhVien(SinhVienModel model) throws Exception;
+    public void createSinhVien(SinhVienModel model);
 }
