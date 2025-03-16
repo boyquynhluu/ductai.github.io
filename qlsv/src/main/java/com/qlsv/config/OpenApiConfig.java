@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
@@ -31,11 +30,7 @@ public class OpenApiConfig {
                             .url(serverUrl)
                             .description(serverName)))
                             .components(new Components()
-                                    .addSecuritySchemes("Authorization", new SecurityScheme()
-                                    .type(SecurityScheme.Type.HTTP)
-                                    .scheme("bearer")
-                                    .bearerFormat("JWT")))
-                            .security(List.of(new SecurityRequirement().addList("Authorization")));
+                                    .addSecuritySchemes("Authorization", new SecurityScheme()));
     }
 
     @Bean
